@@ -3,7 +3,7 @@ package com.ashgorhythm.quizapp.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val Blue80 = Color(0xFF6A3CFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
+val PurpleGrey80 = Color(0xFFC31DFF)
 val Pink80 = Color(0xFFEFB8C8)
 
 val Purple40 = Color(0xFF9500FF)

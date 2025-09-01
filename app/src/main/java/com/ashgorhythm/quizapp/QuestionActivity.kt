@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +18,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +40,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.node.Ref
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,6 +80,19 @@ fun Q(){
         Image(painter = painterResource(R.drawable.bangladesh),
             contentDescription = "BD flag",
             modifier = Modifier.size(170.dp))
+        Spacer(modifier = Modifier.size(10.dp))
+        Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            LinearProgressIndicator(
+            progress = {0.4f} ,
+            trackColor = Color.DarkGray,
+            color = Color.Green
+        )
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(text = "4/10",
+                fontSize = 18.sp)
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
         Card(modifier = Modifier
             .padding(15.dp)
             .height(250.dp)
@@ -81,81 +101,40 @@ fun Q(){
         {
             Column(modifier = Modifier.padding(16.dp))
             {
-               questionList[0].options.forEach { option ->
-                   OptionButton(
-                       name = option,
-                       option = questionList[0],
-                       isSelected = (selectedOption == option),
-                       showResult = false,
-                       onClick = {
-                            if (!showResult){
-                                selectedOption = option
-                            }
-                       })
-               }
+                OptionButton()
 
             }
 
         }
-        Spacer(modifier = Modifier.size(15.dp))
-        if (!showResult) {
-            Button(
-                onClick = { showResult = true },
-                enabled = selectedOption != null,
-                modifier = Modifier.width(150.dp)
-            ) {
-                Text("Submit Answer")
-            }
-        } else {
-            Button(
-                onClick = {
-                    selectedOption = null
-                    showResult = false
-                },
-                modifier = Modifier.width(150.dp)
-            ) {
-                Text("Next Question")
-            }
+        Spacer(modifier = Modifier.size(10.dp))
+        Button(onClick = {},
+            colors = ButtonDefaults.buttonColors(Color(0xFFC31DFF), Color.White),
+            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 10.dp))
+        {
+            Text("Next Question")
         }
-
-
-
     }
 }
 
 @Composable
 fun OptionButton(
-    name: String ,
-    option: Question,
-    isSelected: Boolean,
-    showResult: Boolean,
-    onClick: ()  -> Unit
-) {
-    val backgroundColor = when {
-        showResult && option.options.indexOf(name) == option.correctAnswer -> Color.Green.copy(alpha = 0.2f)
-        showResult && option.options.indexOf(name) != option.correctAnswer && isSelected -> Color.Red.copy(0.2f)
-        isSelected -> MaterialTheme.colorScheme.primary.copy(0.2f)
-        else -> Color.Transparent
-    }
-    val borderColor = when {
-        showResult && option.options.indexOf(name) == option.correctAnswer -> Color.Green
-        showResult && option.options.indexOf(name) != option.correctAnswer && isSelected -> Color.Red
-        isSelected -> MaterialTheme.colorScheme.primary
-        else -> Color.Gray
-    }
-
-    Card(modifier = Modifier
+)
+{
+    Card(
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick() },
-            colors = CardDefaults.cardColors(containerColor = backgroundColor),
-            border = BorderStroke(2.dp,borderColor)
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Green.copy(0.1f)),
+        border = BorderStroke(2.dp, Color.Green.copy(0.2f))
+
     )
     {
-        Text(text = name,
+        Text(text = "Option",
             modifier = Modifier.padding(12.dp),
             fontSize = 18.sp)
     }
-    }
+}
+
+
 
 
