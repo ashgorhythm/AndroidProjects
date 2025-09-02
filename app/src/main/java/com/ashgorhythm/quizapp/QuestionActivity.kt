@@ -1,5 +1,6 @@
 package com.ashgorhythm.quizapp
 
+import android.R.attr.onClick
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +25,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -45,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ashgorhythm.quizapp.model.Option
 import com.ashgorhythm.quizapp.model.Question
 import com.ashgorhythm.quizapp.model.Questions
 
@@ -62,8 +65,10 @@ class QuestionActivity : ComponentActivity() {
 @Composable
 fun Q(){
     val questionList = Questions.getQuestions()
-    var selectedOption by remember { mutableStateOf<String?>(null) }
+    var selectedOption by remember { mutableStateOf<Option?>(null) }
     var showResult by remember { mutableStateOf(false) }
+    var currentProgress by remember { mutableStateOf(0) }
+
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -82,13 +87,14 @@ fun Q(){
             modifier = Modifier.size(170.dp))
         Spacer(modifier = Modifier.size(10.dp))
         Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            val progress = (currentProgress+1).toFloat() / questionList.size
             LinearProgressIndicator(
-            progress = {0.4f} ,
+            progress = {progress} ,
             trackColor = Color.DarkGray,
             color = Color.Green
         )
             Spacer(modifier = Modifier.size(10.dp))
-            Text(text = "4/10",
+            Text(text = "${currentProgress+1}/${questionList.size}",
                 fontSize = 18.sp)
         }
 
@@ -101,13 +107,26 @@ fun Q(){
         {
             Column(modifier = Modifier.padding(16.dp))
             {
-                OptionButton()
+               questionList[0].options.forEach { option ->
+                   OptionButton(
+                       option = option,
+                       isSelected = (selectedOption == option),
+                       showResult = showResult,
+                       onClick = {if (!showResult){
+                           selectedOption = option
+                       } }
+                   )
+               }
 
             }
 
         }
         Spacer(modifier = Modifier.size(10.dp))
-        Button(onClick = {},
+        Button(onClick = {if (currentProgress < questionList.size-1){
+            currentProgress++
+            selectedOption=null
+            showResult = false
+        }},
             colors = ButtonDefaults.buttonColors(Color(0xFFC31DFF), Color.White),
             elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 10.dp))
         {
@@ -116,20 +135,39 @@ fun Q(){
     }
 }
 
+
+
 @Composable
 fun OptionButton(
+    option: Option,
+    isSelected: Boolean,
+    showResult: Boolean,
+    onClick:() -> Unit
 )
 {
+    val backgroundColor = when {
+        showResult && option.isCorrect -> Color.Green.copy(0.1f)
+        showResult && !option.isCorrect && isSelected -> Color.Red.copy(0.1f)
+        isSelected -> MaterialTheme.colorScheme.primary.copy(0.1f)
+        else -> Color.Transparent
+    }
+    val borderColor = when {
+        showResult && option.isCorrect -> Color.Green.copy(0.2f)
+        showResult && !option.isCorrect && isSelected -> Color.Red.copy(0.2f)
+        isSelected -> MaterialTheme.colorScheme.primary.copy(0.2f)
+        else -> Color.Gray
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Green.copy(0.1f)),
-        border = BorderStroke(2.dp, Color.Green.copy(0.2f))
+            .padding(vertical = 4.dp)
+            .clickable{onClick()},
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        border = BorderStroke(2.dp,borderColor)
 
     )
     {
-        Text(text = "Option",
+        Text(text = "${option.text}",
             modifier = Modifier.padding(12.dp),
             fontSize = 18.sp)
     }
