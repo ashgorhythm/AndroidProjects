@@ -1,6 +1,5 @@
 package com.ashgorhythm.quizapp
 
-import android.R.attr.onClick
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,16 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,22 +34,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.node.Ref
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ashgorhythm.quizapp.model.Option
-import com.ashgorhythm.quizapp.model.Question
 import com.ashgorhythm.quizapp.model.Questions
 
 class QuestionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val name = intent.getStringExtra("name")
         setContent {
 
             val questionList = Questions.getQuestions()
@@ -99,7 +87,7 @@ class QuestionActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val progress = (currentProgress + 1).toFloat() / questionList.size
+                    val progress = (currentProgress).toFloat() / questionList.size
                     LinearProgressIndicator(
                         progress = { progress },
                         trackColor = Color.DarkGray,
@@ -170,7 +158,7 @@ class QuestionActivity : ComponentActivity() {
                 else {
                     Intent(this@QuestionActivity, ResultActivity::class.java).also {
                         it.putExtra("score",score)
-                        val name = it.getStringExtra("name")
+                        it.putExtra("name",name)
                         startActivity(it)
                         finish()
                     }
