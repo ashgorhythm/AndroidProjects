@@ -106,6 +106,7 @@ class MainActivity : ComponentActivity() {
                         Button(onClick = {
                             if (!name.isEmpty()){
                                 Intent(this@MainActivity, QuestionActivity::class.java).also {
+                                    it.putExtra("name",name)
                                     startActivity(it)
                                     finish()
                                 }

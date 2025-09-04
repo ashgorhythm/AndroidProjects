@@ -1,6 +1,7 @@
 package com.ashgorhythm.quizapp
 
 import android.R.attr.onClick
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.node.Ref
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,122 +58,179 @@ class QuestionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Q()
-        }
 
-    }
-}
-@Preview(showSystemUi = true)
-@Composable
-fun Q(){
-    val questionList = Questions.getQuestions()
-    var selectedOption by remember { mutableStateOf<Option?>(null) }
-    var showResult by remember { mutableStateOf(false) }
-    var currentProgress by remember { mutableStateOf(0) }
+            val questionList = Questions.getQuestions()
+            var selectedOption by remember { mutableStateOf<Option?>(null) }
+            var showResult by remember { mutableStateOf(false) }
+            var currentProgress by remember { mutableStateOf(0) }
+            var score by remember { mutableStateOf(0) }
 
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(brush = Brush.verticalGradient(listOf(Color(0xFF6A3CFF),Color(0xFF9500FF)))),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        Spacer(modifier = Modifier.size(120.dp))
-        Text(text = "${questionList[0].question}",
-            fontSize = 30.sp,
-            color = Color.White)
-        Spacer(modifier = Modifier.size(10.dp))
-        Image(painter = painterResource(R.drawable.bangladesh),
-            contentDescription = "BD flag",
-            modifier = Modifier.size(170.dp))
-        Spacer(modifier = Modifier.size(10.dp))
-        Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            val progress = (currentProgress+1).toFloat() / questionList.size
-            LinearProgressIndicator(
-            progress = {progress} ,
-            trackColor = Color.DarkGray,
-            color = Color.Green
-        )
-            Spacer(modifier = Modifier.size(10.dp))
-            Text(text = "${currentProgress+1}/${questionList.size}",
-                fontSize = 18.sp)
-        }
 
-        Spacer(modifier = Modifier.size(10.dp))
-        Card(modifier = Modifier
-            .padding(15.dp)
-            .height(250.dp)
-            .fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp))
-        {
-            Column(modifier = Modifier.padding(16.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color(0xFF6A3CFF),
+                                Color(0xFF9500FF)
+                            )
+                        )
+                    ),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            )
             {
-               questionList[0].options.forEach { option ->
-                   OptionButton(
-                       option = option,
-                       isSelected = (selectedOption == option),
-                       showResult = showResult,
-                       onClick = {if (!showResult){
-                           selectedOption = option
-                       } }
-                   )
-               }
+                Spacer(modifier = Modifier.size(120.dp))
+                Text(
+                    text = "${questionList[currentProgress].question}",
+                    fontSize = 30.sp,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                Image(
+                    painter = painterResource(questionList[currentProgress].flag),
+                    contentDescription = "flag",
+                    modifier = Modifier.size(170.dp)
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val progress = (currentProgress + 1).toFloat() / questionList.size
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        trackColor = Color.DarkGray,
+                        color = Color.Green
+                    )
+                    Spacer(modifier = Modifier.size(10.dp))
+                    Text(
+                        text = "${currentProgress + 1}/${questionList.size}",
+                        fontSize = 18.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.size(10.dp))
+                Card(
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .height(250.dp)
+                        .fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                )
+                {
+                    Column(modifier = Modifier.padding(16.dp))
+                    {
+                        questionList[currentProgress].options.forEach { option ->
+                            OptionButton(
+                                option = option,
+                                isSelected = (selectedOption == option),
+                                showResult = showResult,
+                                onClick = {
+                                    if (!showResult) {
+                                        selectedOption = option
+                                    }
+                                }
+                            )
+                        }
+
+                    }
+
+                }
+                Spacer(modifier = Modifier.size(10.dp))
+                if (!showResult) {
+                    Button(
+                        onClick =
+                            {
+                                if (selectedOption != null) {
+                                    showResult = true
+                                }
+                                if (selectedOption?.isCorrect == true){
+                                    score++
+                                }
+                            },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEFB8C8), contentColor = Color.Black),
+                        enabled = selectedOption != null
+
+                    )
+                    {
+                        Text("Submit Answer")
+                    }
+
+
+                }
+                else Button(onClick = {if (currentProgress < questionList.size-1 )
+                {
+                    currentProgress++
+                    selectedOption = null
+                    showResult = false
+                }
+                else {
+                    Intent(this@QuestionActivity, ResultActivity::class.java).also {
+                        it.putExtra("score",score)
+                        val name = it.getStringExtra("name")
+                        startActivity(it)
+                        finish()
+                    }
+                }
+                },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEFB8C8), contentColor = Color.Black))
+                {
+                    if (currentProgress < questionList.size-1){
+                        Text("Next Question")
+                    }
+                    else {
+                        Text("Finish")
+                    }
+
+
+                }
+
 
             }
 
         }
-        Spacer(modifier = Modifier.size(10.dp))
-        Button(onClick = {if (currentProgress < questionList.size-1){
-            currentProgress++
-            selectedOption=null
-            showResult = false
-        }},
-            colors = ButtonDefaults.buttonColors(Color(0xFFC31DFF), Color.White),
-            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 10.dp))
+
+    }
+}
+@Composable
+    fun OptionButton(
+        option: Option,
+        isSelected: Boolean,
+        showResult: Boolean,
+        onClick: () -> Unit
+    ) {
+        val backgroundColor = when {
+            showResult && option.isCorrect -> Color.Green.copy(0.1f)
+            showResult && !option.isCorrect && isSelected -> Color.Red.copy(0.1f)
+            isSelected -> MaterialTheme.colorScheme.primary.copy(0.1f)
+            else -> Color.Transparent
+        }
+        val borderColor = when {
+            showResult && option.isCorrect -> Color.Green.copy(0.2f)
+            showResult && !option.isCorrect && isSelected -> Color.Red.copy(0.2f)
+            isSelected -> MaterialTheme.colorScheme.primary.copy(0.2f)
+            else -> Color.Gray
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .clickable { onClick() },
+            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+            border = BorderStroke(2.dp, borderColor)
+
+        )
         {
-            Text("Next Question")
+            Text(
+                text = "${option.text}",
+                modifier = Modifier.padding(12.dp),
+                fontSize = 18.sp
+            )
         }
     }
-}
-
-
-
-@Composable
-fun OptionButton(
-    option: Option,
-    isSelected: Boolean,
-    showResult: Boolean,
-    onClick:() -> Unit
-)
-{
-    val backgroundColor = when {
-        showResult && option.isCorrect -> Color.Green.copy(0.1f)
-        showResult && !option.isCorrect && isSelected -> Color.Red.copy(0.1f)
-        isSelected -> MaterialTheme.colorScheme.primary.copy(0.1f)
-        else -> Color.Transparent
-    }
-    val borderColor = when {
-        showResult && option.isCorrect -> Color.Green.copy(0.2f)
-        showResult && !option.isCorrect && isSelected -> Color.Red.copy(0.2f)
-        isSelected -> MaterialTheme.colorScheme.primary.copy(0.2f)
-        else -> Color.Gray
-    }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable{onClick()},
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        border = BorderStroke(2.dp,borderColor)
-
-    )
-    {
-        Text(text = "${option.text}",
-            modifier = Modifier.padding(12.dp),
-            fontSize = 18.sp)
-    }
-}
 
 
 
