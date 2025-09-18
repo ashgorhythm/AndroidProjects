@@ -1,4 +1,4 @@
-package com.ashgorhythm.randomquote
+package com.ashgorhythm.randomquote.quote
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ashgorhythm.randomquote.api.RetrofitInstance
 import kotlinx.coroutines.launch
 
 @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)

@@ -1,4 +1,4 @@
-package com.ashgorhythm.randomquote
+package com.ashgorhythm.randomquote.data
 
 data class QuoteData(
     val q: String,
