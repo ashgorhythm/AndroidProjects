@@ -18,7 +18,8 @@ class Activity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
+                Scaffold(modifier = Modifier.fillMaxSize())
+                 {
                     QuoteScreen()
                 }
             }

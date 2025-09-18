@@ -8,6 +8,5 @@ interface QuoteImageApi {
     @GET("random")
     suspend fun getQuote() : Response<List<QuoteData>>
 
-    @GET("image")
-    suspend fun getImage()
+
 }
