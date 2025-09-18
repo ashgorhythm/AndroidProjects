@@ -1,5 +1,7 @@
 package com.ashgorhythm.randomquote
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,29 +26,28 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
-
+@RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
 @Composable
-fun QuoteScreen(){
+fun QuoteScreen() {
     var quote by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
+        loading = true
         scope.launch {
             try {
-               val response = RetrofitInstance.quoteApi.getQuote()
-               val firstQuote = response.body()?.firstOrNull()
-                if (firstQuote != null){
+                val response = RetrofitInstance.quoteApi.getQuote()
+                val firstQuote = response.body()?.firstOrNull()
+                if (firstQuote != null) {
                     quote = firstQuote.q
                     author = firstQuote.a
                 }
-            }catch (e: Exception){
-                quote = "Error fetching quote"
+            } catch (e: Exception) {
+                quote = "Error fetching quote $e"
                 author = ""
             } finally {
                 loading = false
@@ -57,7 +58,7 @@ fun QuoteScreen(){
         modifier = Modifier
             .fillMaxSize()
             .background(Color.DarkGray)
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,16 +73,16 @@ fun QuoteScreen(){
                 color = Color.Magenta,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.padding(vertical = 100.dp))
-            if (loading){
+            Spacer(modifier = Modifier.padding(vertical = 80.dp))
+            if (loading) {
                 CircularProgressIndicator()
-            }
-            else {
+            } else {
                 Text(
                     text = quote,
-                    fontSize = 40.sp,
+                    fontSize = 30.sp,
                     fontFamily = FontFamily.Monospace,
-                    color = Color.White
+                    color = Color.White,
+                    lineHeight = 45.sp
                 )
                 Text(
                     text = author,
@@ -91,30 +92,35 @@ fun QuoteScreen(){
                 )
             }
 
-            Spacer(modifier = Modifier.padding(vertical = 200.dp))
+            Spacer(modifier = Modifier.padding(vertical = 150.dp))
             Button(onClick = {
                 loading = true
-                scope.launch {
+                scope.launch()
+                {
+
                     try {
                         val response = RetrofitInstance.quoteApi.getQuote()
                         val firstQuote = response.body()?.firstOrNull()
-                        if (firstQuote != null){
+                        if (firstQuote != null) {
                             quote = firstQuote.q
                             author = firstQuote.a
                         }
-                    }catch (e: Exception){
-                        quote = "Error fetching quote"
+
+                    } catch (e: Exception) {
+                        quote = "Error fetching quote $e"
                         author = ""
-                    } finally {
+                    }
+                    finally {
+
                         loading = false
                     }
+//
                 }
             }
             ) {
                 Text("Next")
+
             }
         }
     }
-
 }
-
