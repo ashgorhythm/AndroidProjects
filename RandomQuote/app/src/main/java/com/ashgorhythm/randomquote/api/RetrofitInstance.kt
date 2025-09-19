@@ -12,5 +12,6 @@ object RetrofitInstance {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-    val quoteApi : QuoteImageApi = getQuoteInstance().create(QuoteImageApi::class.java)
+
+    val quoteApi : QuoteApi = getQuoteInstance().create(QuoteApi::class.java)
 }
