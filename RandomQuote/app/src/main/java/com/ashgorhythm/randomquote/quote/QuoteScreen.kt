@@ -1,14 +1,11 @@
 package com.ashgorhythm.randomquote.quote
 
-import android.Manifest
-import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,12 +27,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.ashgorhythm.randomquote.api.RetrofitInstance
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun QuoteScreen() {
+fun QuoteScreen(navController: NavHostController) {
     var quote by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
@@ -133,7 +130,9 @@ fun QuoteScreen() {
 
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-                Button(onClick = {}
+                Button(onClick = {
+                    navController.navigate("image")
+                }
                 ) {
                     Text("Image Quote")
                 }
